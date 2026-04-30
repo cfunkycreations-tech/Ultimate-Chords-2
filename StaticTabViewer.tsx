@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
-import { parseGuitarTab } from '../lib/tabParser';
-import { cn } from '../lib/utils';
+import { parseGuitarTab } from './tabParser';
+import { cn } from './utils';
 
 interface StaticTabViewerProps {
   rawText: string;

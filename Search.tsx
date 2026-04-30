@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { searchSongs } from "../services/gemini";
+import { searchSongs } from "./openrouter";
 import { Loader2, Music } from "lucide-react";
 
 export function Search() {

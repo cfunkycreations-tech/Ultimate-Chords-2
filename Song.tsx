@@ -1,11 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { fetchSongChords } from "../services/gemini";
-import { parseChordPro, extractOriginalCapo } from "../lib/chordPro";
+import { fetchSongChords } from "./openrouter";
+import { parseChordPro, extractOriginalCapo } from "./chordPro";
 import { Loader2, Minus, Plus, Play, Pause, Settings2 } from "lucide-react";
-import { cn } from "../lib/utils";
-import { ProTabPlayer } from "../components/ProTabPlayer";
-import { StaticTabViewer } from "../components/StaticTabViewer";
+import { cn } from "./utils";
+import { ProTabPlayer } from "./ProTabPlayer";
+import { StaticTabViewer } from "./StaticTabViewer";
 
 export function Song() {
   const { artist, title } = useParams<{ artist: string, title: string }>();

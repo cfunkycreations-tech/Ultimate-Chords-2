@@ -4,11 +4,11 @@
  */
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Layout } from "./components/Layout";
-import { Home } from "./pages/Home";
-import { Search } from "./pages/Search";
-import { Song } from "./pages/Song";
-import { Tuner } from "./pages/Tuner";
+import { Layout } from "./Layout";
+import { Home } from "./Home";
+import { Search } from "./Search";
+import { Song } from "./Song";
+import { Tuner } from "./Turner";
 
 export default function App() {
   return (

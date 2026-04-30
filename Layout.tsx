@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import { Search, Guitar, Menu, Mic } from "lucide-react";
+import { Search, Guitar, Menu, Mic, Zap } from "lucide-react";
+import { ModelPicker, getSelectedModel } from "./ModelPicker";
 
 export function Layout() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [modelPickerOpen, setModelPickerOpen] = useState(false);
+  const [currentModel, setCurrentModel] = useState(getSelectedModel);
   const navigate = useNavigate();
 
   const handleSearch = (e: React.FormEvent) => {
@@ -12,6 +15,13 @@ export function Layout() {
       navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
+
+  const handleModelClose = () => {
+    setModelPickerOpen(false);
+    setCurrentModel(getSelectedModel()); // refresh display after selection
+  };
+
+  const displayName = currentModel.split('/').pop()?.replace(/:free$/, '') ?? currentModel;
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-50 font-sans selection:bg-yellow-500/30">
@@ -42,6 +52,16 @@ export function Layout() {
           </form>
 
           <div className="flex items-center gap-2">
+            {/* Active model chip */}
+            <button
+              onClick={() => setModelPickerOpen(true)}
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-full transition-colors text-zinc-300 max-w-[160px]"
+              title="Change AI model"
+            >
+              <Zap className="w-3 h-3 text-yellow-500 flex-shrink-0" />
+              <span className="truncate">{displayName}</span>
+            </button>
+
             <Link to="/tuner" className="flex items-center gap-2 px-4 py-2 text-sm font-medium hover:bg-zinc-800 rounded-full transition-colors text-zinc-300 hover:text-yellow-500">
               <Mic className="w-4 h-4" />
               <span className="hidden sm:inline">Tuner</span>
@@ -55,6 +75,8 @@ export function Layout() {
           </div>
         </div>
       </header>
+
+      <ModelPicker isOpen={modelPickerOpen} onClose={handleModelClose} />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">

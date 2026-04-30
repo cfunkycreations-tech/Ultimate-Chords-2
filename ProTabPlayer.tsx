@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Play, Pause, SkipBack, Repeat, Guitar, Sparkles, SlidersHorizontal, CheckCircle2, Volume2, Loader2 } from 'lucide-react';
 // @ts-ignore
 import Soundfont from 'soundfont-player';
-import { parseGuitarTab } from '../lib/tabParser';
-import { cn } from '../lib/utils';
+import { parseGuitarTab } from './tabParser';
+import { cn } from './utils';
 
 function getBaseMidiNote(prefix: string, stringIdx: number, totalStrings: number): number {
   const p = prefix.replace(/[^a-zA-Z#]/g, '');

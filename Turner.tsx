@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Mic, MicOff, Settings2, X } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn } from './utils';
 
 // YIN Pitch Detection Algorithm - highly accurate for guitar/bass
 // It is much better than standard autocorrelation at avoiding octave errors
@@ -147,10 +147,23 @@ export function Tuner() {
       analyser.fftSize = 4096; 
       analyserRef.current = analyser;
       
+      // Ensure context is running — Chrome may suspend it after an async await
+      if (audioCtx.state === 'suspended') {
+        await audioCtx.resume();
+      }
+
       const source = audioCtx.createMediaStreamSource(stream);
       source.connect(lowpass);
       lowpass.connect(analyser);
-      
+
+      // Connect through a silent node to destination so the audio graph
+      // stays active. Without this, Chromium optimizes away the whole chain
+      // and getFloatTimeDomainData returns all zeros.
+      const silent = audioCtx.createGain();
+      silent.gain.value = 0;
+      analyser.connect(silent);
+      silent.connect(audioCtx.destination);
+
       setIsListening(true);
       updatePitch();
     } catch (err) {
@@ -160,13 +173,19 @@ export function Tuner() {
   };
 
   const stopListening = () => {
-    if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
+    if (rafIdRef.current) {
+      cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = null;
+    }
     if (mediaStreamRef.current) {
       mediaStreamRef.current.getTracks().forEach(track => track.stop());
+      mediaStreamRef.current = null;
     }
     if (audioContextRef.current) {
       audioContextRef.current.close();
+      audioContextRef.current = null;
     }
+    analyserRef.current = null;
     setIsListening(false);
     setPitch(null);
     setNote("--");
@@ -186,6 +205,7 @@ export function Tuner() {
 
   const updatePitch = () => {
     if (!analyserRef.current || !audioContextRef.current) return;
+    if (audioContextRef.current.state === 'closed') return;
     
     const buffer = new Float32Array(analyserRef.current.fftSize);
     analyserRef.current.getFloatTimeDomainData(buffer);
